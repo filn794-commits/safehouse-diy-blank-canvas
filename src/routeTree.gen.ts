@@ -9,8 +9,26 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ScanRouteImport } from './routes/scan'
+import { Route as ScamGuardRouteImport } from './routes/scam-guard'
+import { Route as FixRouteImport } from './routes/fix'
 import { Route as IndexRouteImport } from './routes/index'
 
+const ScanRoute = ScanRouteImport.update({
+  id: '/scan',
+  path: '/scan',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ScamGuardRoute = ScamGuardRouteImport.update({
+  id: '/scam-guard',
+  path: '/scam-guard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FixRoute = FixRouteImport.update({
+  id: '/fix',
+  path: '/fix',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -19,28 +37,61 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/fix': typeof FixRoute
+  '/scam-guard': typeof ScamGuardRoute
+  '/scan': typeof ScanRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/fix': typeof FixRoute
+  '/scam-guard': typeof ScamGuardRoute
+  '/scan': typeof ScanRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/fix': typeof FixRoute
+  '/scam-guard': typeof ScamGuardRoute
+  '/scan': typeof ScanRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/fix' | '/scam-guard' | '/scan'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/fix' | '/scam-guard' | '/scan'
+  id: '__root__' | '/' | '/fix' | '/scam-guard' | '/scan'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  FixRoute: typeof FixRoute
+  ScamGuardRoute: typeof ScamGuardRoute
+  ScanRoute: typeof ScanRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/scan': {
+      id: '/scan'
+      path: '/scan'
+      fullPath: '/scan'
+      preLoaderRoute: typeof ScanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/scam-guard': {
+      id: '/scam-guard'
+      path: '/scam-guard'
+      fullPath: '/scam-guard'
+      preLoaderRoute: typeof ScamGuardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/fix': {
+      id: '/fix'
+      path: '/fix'
+      fullPath: '/fix'
+      preLoaderRoute: typeof FixRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -53,7 +104,20 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  FixRoute: FixRoute,
+  ScamGuardRoute: ScamGuardRoute,
+  ScanRoute: ScanRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
