@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Check, Wrench, ShieldAlert, Trophy, ArrowRight } from "lucide-react";
+import { useProgress, progressStore } from "@/lib/progress-store";
 
 export const Route = createFileRoute("/fix")({
   head: () => ({
@@ -12,7 +13,6 @@ export const Route = createFileRoute("/fix")({
   component: FixView,
 });
 
-// Simulated AI response
 const aiFix = {
   title: "Fix a Dripping Sink Drain",
   difficulty: 2,
@@ -32,6 +32,8 @@ const aiFix = {
     "Turn the water back on and watch for drips. You did it!",
   ],
 };
+
+const XP_PER_STEP = 20;
 
 function DifficultyGauge({ level }: { level: number }) {
   const labels = ["", "Super Easy", "Easy", "Moderate", "Tricky", "Pro Level"];
@@ -63,13 +65,33 @@ function DifficultyGauge({ level }: { level: number }) {
 }
 
 function FixView() {
+  const { xp, goal } = useProgress();
+  // Track which steps have already awarded XP (only award on first check).
   const [checked, setChecked] = useState<boolean[]>(() => aiFix.steps.map(() => false));
-  const completedCount = useMemo(() => checked.filter(Boolean).length, [checked]);
-  const totalXp = completedCount * 20;
-  const allDone = completedCount === aiFix.steps.length;
+  const [awarded, setAwarded] = useState<boolean[]>(() => aiFix.steps.map(() => false));
+  const [bumpKey, setBumpKey] = useState(0);
 
-  const toggle = (i: number) =>
-    setChecked((prev) => prev.map((v, idx) => (idx === i ? !v : v)));
+  const sessionXp = useMemo(() => awarded.filter(Boolean).length * XP_PER_STEP, [awarded]);
+  const allDone = checked.every(Boolean);
+  const pct = Math.min(100, (xp / goal) * 100);
+
+  const toggle = (i: number) => {
+    setChecked((prev) => {
+      const next = [...prev];
+      next[i] = !prev[i];
+      return next;
+    });
+    // Only add XP the first time a step is checked (don't subtract when unchecked).
+    if (!checked[i] && !awarded[i]) {
+      progressStore.addXp(XP_PER_STEP);
+      setAwarded((prev) => {
+        const next = [...prev];
+        next[i] = true;
+        return next;
+      });
+      setBumpKey((k) => k + 1);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -104,16 +126,32 @@ function FixView() {
         </ul>
       </section>
 
-      {/* XP tracker */}
-      <section className="flex items-center gap-4 rounded-3xl border-2 border-primary bg-primary/10 p-5">
-        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
-          <Trophy className="h-7 w-7" strokeWidth={2.5} />
+      {/* Live XP tracker */}
+      <section className="sticky top-[88px] z-30 rounded-3xl border-2 border-primary bg-primary/10 p-5 shadow-md backdrop-blur">
+        <div className="flex items-center gap-4">
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
+            <Trophy className="h-7 w-7" strokeWidth={2.5} />
+          </div>
+          <div className="flex-1">
+            <p className="text-sm font-bold uppercase tracking-wider text-primary">Your XP</p>
+            <p className="font-display text-2xl font-black leading-tight">
+              {xp}<span className="text-muted-foreground">/{goal}</span>
+              {sessionXp > 0 && (
+                <span
+                  key={bumpKey}
+                  className="ml-2 inline-block rounded-full bg-success px-3 py-0.5 text-base font-black text-success-foreground animate-scale-in"
+                >
+                  +{sessionXp}
+                </span>
+              )}
+            </p>
+          </div>
         </div>
-        <div>
-          <p className="text-sm font-bold uppercase tracking-wider text-primary">XP Earned</p>
-          <p className="font-display text-2xl font-black">
-            +{totalXp} XP <span className="text-base font-bold text-muted-foreground">(+20 per step)</span>
-          </p>
+        <div className="mt-3 h-4 w-full overflow-hidden rounded-full border-2 border-border bg-muted">
+          <div
+            className="h-full rounded-full bg-gradient-to-r from-accent to-primary transition-all duration-500 ease-out"
+            style={{ width: `${pct}%` }}
+          />
         </div>
       </section>
 
@@ -128,23 +166,42 @@ function FixView() {
                 <button
                   onClick={() => toggle(i)}
                   aria-pressed={isChecked}
-                  className={`flex w-full items-start gap-4 rounded-2xl border-2 p-4 text-left transition-all ${
+                  className={`flex w-full items-start gap-4 rounded-2xl border-2 p-4 text-left transition-all duration-300 ${
                     isChecked
                       ? "border-success bg-success/10"
                       : "border-border bg-card hover:border-primary"
                   }`}
                 >
                   <span
-                    className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border-2 text-lg font-black transition-colors ${
+                    className={`relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border-2 text-lg font-black transition-colors ${
                       isChecked
                         ? "border-success bg-success text-success-foreground"
                         : "border-border bg-background text-foreground"
                     }`}
                   >
-                    {isChecked ? <Check className="h-6 w-6" strokeWidth={3} /> : i + 1}
+                    {isChecked ? (
+                      <Check
+                        key={`check-${i}-${awarded[i] ? "done" : "fresh"}`}
+                        className="h-6 w-6 animate-scale-in"
+                        strokeWidth={3}
+                      />
+                    ) : (
+                      i + 1
+                    )}
                   </span>
-                  <span className={`text-lg leading-snug ${isChecked ? "line-through opacity-70" : ""}`}>
-                    {step}
+                  <span className="flex-1">
+                    <span
+                      className={`block text-lg leading-snug ${
+                        isChecked ? "line-through opacity-70" : ""
+                      }`}
+                    >
+                      {step}
+                    </span>
+                    {isChecked && awarded[i] && (
+                      <span className="mt-1 inline-block rounded-full bg-success/20 px-2.5 py-0.5 text-sm font-black text-success animate-fade-in">
+                        +{XP_PER_STEP} XP
+                      </span>
+                    )}
                   </span>
                 </button>
               </li>
@@ -154,10 +211,12 @@ function FixView() {
       </section>
 
       {allDone && (
-        <div className="rounded-3xl border-2 border-success bg-success/15 p-6 text-center">
+        <div className="rounded-3xl border-2 border-success bg-success/15 p-6 text-center animate-fade-in">
           <p className="text-4xl">🎉</p>
           <p className="mt-2 font-display text-2xl font-black">You fixed it!</p>
-          <p className="mt-1 text-base text-muted-foreground">+{totalXp} XP added to your profile.</p>
+          <p className="mt-1 text-base text-muted-foreground">
+            +{sessionXp} XP added to your profile.
+          </p>
         </div>
       )}
 
