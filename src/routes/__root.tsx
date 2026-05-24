@@ -11,6 +11,7 @@ import {
 import { Home, ScanLine, Wrench, ShieldCheck } from "lucide-react";
 
 import appCss from "../styles.css?url";
+import { LevelUpOverlay } from "@/components/LevelUpOverlay";
 
 function NotFoundComponent() {
   return (
@@ -146,6 +147,7 @@ function RootComponent() {
           <Outlet />
         </main>
         <BottomNav />
+        <LevelUpOverlay />
       </div>
     </QueryClientProvider>
   );
