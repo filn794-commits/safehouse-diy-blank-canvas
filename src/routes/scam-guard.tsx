@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import {
   ShieldCheck,
@@ -253,9 +253,8 @@ function ScamGuard() {
       </section>
 
       {/* Mentor */}
-      <a
-        href="#mentor"
-        onClick={(e) => e.preventDefault()}
+      <Link
+        to="/mentor"
         className="flex items-center gap-4 rounded-3xl border-2 border-primary bg-primary p-5 text-primary-foreground shadow-lg transition-transform active:scale-[0.99]"
       >
         <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-primary-foreground/15">
@@ -266,10 +265,10 @@ function ScamGuard() {
             Video Call a Mentor
           </p>
           <p className="text-sm opacity-90">
-            Nervous? Talk to a real person, free, in 5 minutes.
+            Nervous? Talk to a real person in under a minute.
           </p>
         </div>
-      </a>
+      </Link>
     </div>
   );
 }

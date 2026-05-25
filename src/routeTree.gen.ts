@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ScanRouteImport } from './routes/scan'
 import { Route as ScamGuardRouteImport } from './routes/scam-guard'
+import { Route as MentorRouteImport } from './routes/mentor'
 import { Route as FixRouteImport } from './routes/fix'
 import { Route as IndexRouteImport } from './routes/index'
 
@@ -22,6 +23,11 @@ const ScanRoute = ScanRouteImport.update({
 const ScamGuardRoute = ScamGuardRouteImport.update({
   id: '/scam-guard',
   path: '/scam-guard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MentorRoute = MentorRouteImport.update({
+  id: '/mentor',
+  path: '/mentor',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FixRoute = FixRouteImport.update({
@@ -38,12 +44,14 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/fix': typeof FixRoute
+  '/mentor': typeof MentorRoute
   '/scam-guard': typeof ScamGuardRoute
   '/scan': typeof ScanRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/fix': typeof FixRoute
+  '/mentor': typeof MentorRoute
   '/scam-guard': typeof ScamGuardRoute
   '/scan': typeof ScanRoute
 }
@@ -51,20 +59,22 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/fix': typeof FixRoute
+  '/mentor': typeof MentorRoute
   '/scam-guard': typeof ScamGuardRoute
   '/scan': typeof ScanRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/fix' | '/scam-guard' | '/scan'
+  fullPaths: '/' | '/fix' | '/mentor' | '/scam-guard' | '/scan'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/fix' | '/scam-guard' | '/scan'
-  id: '__root__' | '/' | '/fix' | '/scam-guard' | '/scan'
+  to: '/' | '/fix' | '/mentor' | '/scam-guard' | '/scan'
+  id: '__root__' | '/' | '/fix' | '/mentor' | '/scam-guard' | '/scan'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   FixRoute: typeof FixRoute
+  MentorRoute: typeof MentorRoute
   ScamGuardRoute: typeof ScamGuardRoute
   ScanRoute: typeof ScanRoute
 }
@@ -83,6 +93,13 @@ declare module '@tanstack/react-router' {
       path: '/scam-guard'
       fullPath: '/scam-guard'
       preLoaderRoute: typeof ScamGuardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mentor': {
+      id: '/mentor'
+      path: '/mentor'
+      fullPath: '/mentor'
+      preLoaderRoute: typeof MentorRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/fix': {
@@ -105,6 +122,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   FixRoute: FixRoute,
+  MentorRoute: MentorRoute,
   ScamGuardRoute: ScamGuardRoute,
   ScanRoute: ScanRoute,
 }
