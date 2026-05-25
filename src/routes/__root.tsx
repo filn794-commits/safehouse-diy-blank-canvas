@@ -12,6 +12,7 @@ import { Home, ScanLine, Wrench, ShieldCheck } from "lucide-react";
 
 import appCss from "../styles.css?url";
 import { LevelUpOverlay } from "@/components/LevelUpOverlay";
+import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
   return (
@@ -156,6 +157,7 @@ function RootComponent() {
         </main>
         <BottomNav />
         <LevelUpOverlay />
+        <Toaster position="top-center" richColors closeButton />
       </div>
     </QueryClientProvider>
   );

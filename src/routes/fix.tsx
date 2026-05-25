@@ -1,7 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Check, Wrench, ShieldAlert, Trophy, ArrowRight } from "lucide-react";
+import { toast } from "sonner";
 import { useProgress, progressStore } from "@/lib/progress-store";
+import { useFix, fixStore } from "@/lib/fix-store";
 
 export const Route = createFileRoute("/fix")({
   head: () => ({
@@ -12,26 +14,6 @@ export const Route = createFileRoute("/fix")({
   }),
   component: FixView,
 });
-
-const aiFix = {
-  title: "Fix a Dripping Sink Drain",
-  difficulty: 2,
-  estimatedTime: "20 minutes",
-  tools: [
-    { name: "Adjustable Wrench", emoji: "🔧" },
-    { name: "Bucket", emoji: "🪣" },
-    { name: "Old Towel", emoji: "🧻" },
-    { name: "Plumber's Tape", emoji: "🩹" },
-  ],
-  steps: [
-    "Clear everything from under the sink and put a bucket below the pipes.",
-    "Turn off the water using the valves under the sink (turn clockwise).",
-    "Unscrew the slip nut on the leaking joint by hand or with the wrench.",
-    "Wrap plumber's tape clockwise around the threads (3 turns).",
-    "Tighten the nut back on — snug, but don't overtighten.",
-    "Turn the water back on and watch for drips. You did it!",
-  ],
-};
 
 const XP_PER_STEP = 20;
 
@@ -66,13 +48,32 @@ function DifficultyGauge({ level }: { level: number }) {
 
 function FixView() {
   const { xp, goal } = useProgress();
+  const { fix: aiFix, justAnalyzed } = useFix();
   // Track which steps have already awarded XP (only award on first check).
   const [checked, setChecked] = useState<boolean[]>(() => aiFix.steps.map(() => false));
   const [awarded, setAwarded] = useState<boolean[]>(() => aiFix.steps.map(() => false));
   const [bumpKey, setBumpKey] = useState(0);
 
+  // Reset checklist whenever the fix changes (e.g. new AI analysis).
+  useEffect(() => {
+    setChecked(aiFix.steps.map(() => false));
+    setAwarded(aiFix.steps.map(() => false));
+    setBumpKey((k) => k + 1);
+  }, [aiFix]);
+
+  // Show analysis-complete toast once when arriving from Scan Hub.
+  useEffect(() => {
+    if (!justAnalyzed) return;
+    const totalXp = aiFix.steps.length * XP_PER_STEP;
+    toast.success("Analysis Complete!", {
+      description: `Your Dashboard has been updated. Complete this fix to earn +${totalXp} total XP!`,
+      duration: 6000,
+    });
+    fixStore.clearJustAnalyzed();
+  }, [justAnalyzed, aiFix]);
+
   const sessionXp = useMemo(() => awarded.filter(Boolean).length * XP_PER_STEP, [awarded]);
-  const allDone = checked.every(Boolean);
+  const allDone = checked.length > 0 && checked.every(Boolean);
   const pct = Math.min(100, (xp / goal) * 100);
 
   const toggle = (i: number) => {
