@@ -35,35 +35,37 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
   --font-display: var(--font-display);
+  --font-mono: var(--font-mono);
 }
 
 :root {
-  --radius: 1rem;
-  /* Warm cream palette, high contrast */
-  --background: oklch(0.97 0.025 85);
-  --foreground: oklch(0.22 0.03 60);
-  --card: oklch(0.99 0.018 88);
-  --card-foreground: oklch(0.22 0.03 60);
-  --popover: oklch(0.99 0.018 88);
-  --popover-foreground: oklch(0.22 0.03 60);
-  --primary: oklch(0.52 0.17 38); /* warm terracotta */
-  --primary-foreground: oklch(0.99 0.01 90);
-  --secondary: oklch(0.92 0.04 80);
-  --secondary-foreground: oklch(0.25 0.03 60);
-  --muted: oklch(0.93 0.03 82);
-  --muted-foreground: oklch(0.42 0.025 60);
-  --accent: oklch(0.78 0.16 75); /* warm amber */
-  --accent-foreground: oklch(0.22 0.03 60);
-  --destructive: oklch(0.55 0.22 28);
-  --destructive-foreground: oklch(0.99 0.01 90);
-  --success: oklch(0.55 0.14 150);
-  --success-foreground: oklch(0.99 0.01 90);
-  --warning: oklch(0.72 0.17 65);
-  --warning-foreground: oklch(0.22 0.03 60);
-  --border: oklch(0.85 0.03 75);
-  --input: oklch(0.88 0.03 78);
-  --ring: oklch(0.52 0.17 38);
-  --font-display: "Fraunces", Georgia, serif;
+  --radius: 0.875rem;
+  /* Dark cyber palette — black canvas, neon lime accent */
+  --background: oklch(0.14 0.012 260);
+  --foreground: oklch(0.97 0.01 110);
+  --card: oklch(0.18 0.014 260);
+  --card-foreground: oklch(0.97 0.01 110);
+  --popover: oklch(0.16 0.014 260);
+  --popover-foreground: oklch(0.97 0.01 110);
+  --primary: oklch(0.88 0.22 125); /* neon lime/chartreuse */
+  --primary-foreground: oklch(0.16 0.02 260);
+  --secondary: oklch(0.24 0.018 260);
+  --secondary-foreground: oklch(0.97 0.01 110);
+  --muted: oklch(0.22 0.014 260);
+  --muted-foreground: oklch(0.68 0.018 250);
+  --accent: oklch(0.72 0.2 295); /* electric violet */
+  --accent-foreground: oklch(0.97 0.01 110);
+  --destructive: oklch(0.65 0.24 25);
+  --destructive-foreground: oklch(0.98 0.01 110);
+  --success: oklch(0.82 0.22 145);
+  --success-foreground: oklch(0.16 0.02 260);
+  --warning: oklch(0.85 0.18 90);
+  --warning-foreground: oklch(0.16 0.02 260);
+  --border: oklch(0.28 0.014 260);
+  --input: oklch(0.24 0.014 260);
+  --ring: oklch(0.88 0.22 125);
+  --font-display: "Space Grotesk", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
 }
 
 @layer base {
@@ -71,7 +73,7 @@
     border-color: var(--color-border);
   }
   html {
-    font-family: "Nunito", system-ui, sans-serif;
+    font-family: "Space Grotesk", system-ui, sans-serif;
     font-size: 17px;
   }
   body {
@@ -81,6 +83,7 @@
   }
   h1, h2, h3, h4 {
     font-family: var(--font-display);
-    letter-spacing: -0.01em;
+    letter-spacing: -0.02em;
+    font-weight: 700;
   }
 }
