@@ -99,9 +99,9 @@ function BottomNav() {
   return (
     <nav
       aria-label="Primary"
-      className="fixed bottom-0 left-0 right-0 z-50 border-t-2 border-border bg-card pb-[env(safe-area-inset-bottom)] shadow-[0_-4px_20px_rgba(0,0,0,0.06)]"
+      className="fixed bottom-4 left-1/2 z-50 w-[min(640px,calc(100%-2rem))] -translate-x-1/2 rounded-full border border-border bg-card/80 px-2 py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] shadow-[0_10px_40px_rgba(0,0,0,0.5)] backdrop-blur-xl"
     >
-      <ul className="mx-auto flex max-w-2xl items-stretch justify-around">
+      <ul className="flex items-stretch justify-around gap-1">
         {navItems.map((item) => {
           const active = pathname === item.to;
           const Icon = item.icon;
@@ -109,18 +109,14 @@ function BottomNav() {
             <li key={item.to} className="flex-1">
               <Link
                 to={item.to}
-                className={`flex h-20 flex-col items-center justify-center gap-1 text-base font-bold transition-colors ${
-                  active ? "text-primary" : "text-muted-foreground"
+                className={`flex h-14 flex-col items-center justify-center gap-0.5 rounded-full text-xs font-semibold tracking-wide transition-all ${
+                  active
+                    ? "bg-primary text-primary-foreground shadow-[0_0_20px_color-mix(in_oklab,var(--primary)_50%,transparent)]"
+                    : "text-muted-foreground hover:text-foreground"
                 }`}
               >
-                <span
-                  className={`flex h-11 w-11 items-center justify-center rounded-2xl transition-colors ${
-                    active ? "bg-primary text-primary-foreground" : "bg-transparent"
-                  }`}
-                >
-                  <Icon className="h-6 w-6" strokeWidth={2.5} />
-                </span>
-                <span>{item.label}</span>
+                <Icon className="h-5 w-5" strokeWidth={2.25} />
+                <span className="uppercase">{item.label}</span>
               </Link>
             </li>
           );
@@ -132,14 +128,18 @@ function BottomNav() {
 
 function AppHeader() {
   return (
-    <header className="sticky top-0 z-40 border-b-2 border-border bg-background/95 backdrop-blur">
+    <header className="sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur-xl">
       <div className="mx-auto flex max-w-2xl items-center gap-3 px-5 py-4">
-        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
-          <Wrench className="h-6 w-6" strokeWidth={2.5} />
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-[0_0_24px_color-mix(in_oklab,var(--primary)_60%,transparent)]">
+          <Wrench className="h-5 w-5" strokeWidth={2.5} />
         </div>
         <div>
-          <p className="font-display text-xl font-black leading-none">SafeHouse DIY</p>
-          <p className="text-sm text-muted-foreground">You've got this.</p>
+          <p className="font-display text-lg font-bold leading-none tracking-tight">
+            SafeHouse<span className="text-primary">.diy</span>
+          </p>
+          <p className="mt-1 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+            // you've got this
+          </p>
         </div>
       </div>
     </header>
@@ -150,15 +150,17 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="min-h-screen bg-background pb-24">
+      <div className="relative min-h-screen bg-background pb-28 text-foreground">
+        <div className="pointer-events-none fixed inset-0 -z-10 opacity-60 [background:radial-gradient(60%_40%_at_50%_0%,color-mix(in_oklab,var(--primary)_20%,transparent),transparent_70%),radial-gradient(50%_30%_at_100%_100%,color-mix(in_oklab,var(--accent)_15%,transparent),transparent_70%)]" />
         <AppHeader />
         <main className="mx-auto max-w-2xl px-5 py-6">
           <Outlet />
         </main>
         <BottomNav />
         <LevelUpOverlay />
-        <Toaster position="top-center" richColors closeButton />
+        <Toaster position="top-center" richColors closeButton theme="dark" />
       </div>
     </QueryClientProvider>
   );
 }
+
