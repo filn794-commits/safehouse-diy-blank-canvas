@@ -8,11 +8,13 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { Home, ScanLine, Wrench, ShieldCheck } from "lucide-react";
+import { Home, ScanLine, Wrench, ShieldCheck, LogOut } from "lucide-react";
+import { useEffect, useState } from "react";
 
 import appCss from "../styles.css?url";
 import { LevelUpOverlay } from "@/components/LevelUpOverlay";
 import { Toaster } from "@/components/ui/sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 function NotFoundComponent() {
   return (
@@ -63,6 +65,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:type", content: "website" },
     ],
     links: [
+      { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
       { rel: "stylesheet", href: appCss },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
@@ -126,6 +129,44 @@ function BottomNav() {
   );
 }
 
+function AuthButton() {
+  const [email, setEmail] = useState<string | null>(null);
+
+  useEffect(() => {
+    void supabase.auth.getSession().then(({ data }) => setEmail(data.session?.user.email ?? null));
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
+      setEmail(session?.user.email ?? null);
+    });
+    return () => sub.subscription.unsubscribe();
+  }, []);
+
+  if (!email) {
+    return (
+      <Link
+        to="/auth"
+        search={{ next: "/" }}
+        className="rounded-full border border-border px-4 py-2 font-mono text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground transition-colors hover:text-foreground"
+      >
+        Sign in
+      </Link>
+    );
+  }
+
+  return (
+    <button
+      onClick={async () => {
+        await supabase.auth.signOut();
+        window.location.assign("/");
+      }}
+      title={email}
+      className="flex items-center gap-2 rounded-full border border-border px-4 py-2 font-mono text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground transition-colors hover:text-foreground"
+    >
+      <LogOut className="h-4 w-4" strokeWidth={2.5} />
+      Sign out
+    </button>
+  );
+}
+
 function AppHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur-xl">
@@ -140,6 +181,9 @@ function AppHeader() {
           <p className="mt-1 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
             // you've got this
           </p>
+        </div>
+        <div className="ml-auto">
+          <AuthButton />
         </div>
       </div>
     </header>

@@ -23,92 +23,15 @@ export const Route = createFileRoute("/scam-guard")({
   component: ScamGuard,
 });
 
-type IssueId = "clogged-drain" | "water-heater" | "ac-warm";
+import {
+  ISSUES,
+  ISSUE_LIST,
+  riskOf,
+  type Issue,
+  type IssueId,
+  type Risk,
+} from "@/lib/repair-data";
 
-type Issue = {
-  id: IssueId;
-  label: string;
-  emoji: string;
-  averageLow: number;
-  averageHigh: number;
-  dangerOver: number;
-  script: string;
-  tips: string[];
-  breakdown: string[];
-};
-
-const ISSUES: Record<IssueId, Issue> = {
-  "clogged-drain": {
-    id: "clogged-drain",
-    label: "Clogged Main Drain",
-    emoji: "🚿",
-    averageLow: 150,
-    averageHigh: 300,
-    dangerOver: 350,
-    script:
-      "Hi, I have a standard 3-inch mainline backup. I need a straightforward mainline snake clearing. Please confirm your flat fee for this service before sending a technician.",
-    tips: [
-      "Refuse a 'camera inspection upsell' before the snake is even tried.",
-      "Get the flat fee in writing by text before they arrive.",
-    ],
-    breakdown: [
-      "Phoenix trip / dispatch fee: $59 - $89 (often waived with repair)",
-      "Standard labor rate: $95 - $135 per hour",
-      "Typical job time: 1 - 1.5 hours",
-      "Snake / cable equipment: included in flat fee",
-    ],
-  },
-  "water-heater": {
-    id: "water-heater",
-    label: "Leaking Water Heater",
-    emoji: "🔥",
-    averageLow: 220,
-    averageHigh: 450,
-    dangerOver: 600,
-    script:
-      "Hi, I have a 40-gallon water heater with a visible leak. I need a diagnostic visit with a written quote before any repair or replacement. Please confirm your diagnostic fee and that it will be credited toward the repair.",
-    tips: [
-      "Don't agree to full replacement without a second opinion.",
-      "Ask the age of the unit — if under 8 years, repair is usually fine.",
-    ],
-    breakdown: [
-      "Phoenix trip / diagnostic fee: $75 - $99",
-      "Standard labor rate: $110 - $150 per hour",
-      "Typical job time: 2 - 3 hours",
-      "Common parts (T&P valve, element): $25 - $90",
-    ],
-  },
-  "ac-warm": {
-    id: "ac-warm",
-    label: "AC Blowing Warm Air",
-    emoji: "❄️",
-    averageLow: 150,
-    averageHigh: 400,
-    dangerOver: 500,
-    script:
-      "Hi, my central AC is running but blowing warm air. I need a standard diagnostic visit with a written quote before any refrigerant is added or parts are replaced. Please confirm your diagnostic fee in writing.",
-    tips: [
-      "Never approve refrigerant top-off without finding the leak first.",
-      "Reject 'whole system replacement' pitches on the first visit.",
-    ],
-    breakdown: [
-      "Phoenix trip / diagnostic fee: $69 - $99 (higher in July/August)",
-      "Standard labor rate: $100 - $145 per hour",
-      "Typical job time: 1 - 2 hours",
-      "Capacitor replacement: $150 - $250 installed",
-    ],
-  },
-};
-
-const ISSUE_LIST = Object.values(ISSUES);
-
-type Risk = "green" | "yellow" | "red";
-
-function riskOf(quote: number, issue: Issue): Risk {
-  if (quote <= issue.averageHigh) return "green";
-  if (quote < issue.dangerOver) return "yellow";
-  return "red";
-}
 
 const RISK_META: Record<Risk, { label: string; token: string; blurb: string }> = {
   green: {
