@@ -355,6 +355,9 @@ function FixView() {
         </span>
         <ArrowRight className="h-5 w-5" strokeWidth={2.5} />
       </Link>
+        </div>
+      )}
     </div>
+
   );
 }
