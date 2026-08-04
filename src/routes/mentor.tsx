@@ -16,7 +16,7 @@ import daveAvatar from "@/assets/mentor-dave.jpg";
 export const Route = createFileRoute("/mentor")({
   head: () => ({
     meta: [
-      { title: "Video Call a Mentor — SafeHouse DIY" },
+      { title: "Video Call a Mentor — PocketPro AI" },
       {
         name: "description",
         content:
@@ -376,7 +376,7 @@ function CallOverlay({
           </button>
         </div>
         <p className="mt-4 text-center text-sm font-bold text-background/70">
-          End Call to return to SafeHouse DIY
+          End Call to return to PocketPro AI
         </p>
       </div>
     </div>

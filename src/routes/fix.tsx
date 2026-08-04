@@ -1,6 +1,17 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Check, Wrench, ShieldAlert, Trophy, ArrowRight } from "lucide-react";
+import {
+  Check,
+  Wrench,
+  ShieldAlert,
+  Trophy,
+  ArrowRight,
+  Search,
+  Camera,
+  FileText,
+  Lock,
+  HardHat,
+} from "lucide-react";
 import { toast } from "sonner";
 import { useProgress, progressStore } from "@/lib/progress-store";
 import { useFix, fixStore } from "@/lib/fix-store";
@@ -8,14 +19,24 @@ import { useFix, fixStore } from "@/lib/fix-store";
 export const Route = createFileRoute("/fix")({
   head: () => ({
     meta: [
-      { title: "Your Fix Guide — SafeHouse DIY" },
-      { name: "description", content: "A simple step-by-step guide tailored to your repair." },
+      { title: "Field Tech HUD — PocketPro AI" },
+      { name: "description", content: "Commercial manual lookup, equipment scanning, and lockout/tagout-gated repair steps for maintenance pros." },
+      { property: "og:title", content: "Field Tech HUD — PocketPro AI" },
+      { property: "og:description", content: "Commercial manual lookup, equipment scanning, and lockout/tagout-gated repair steps for maintenance pros." },
     ],
   }),
   component: FixView,
 });
 
 const XP_PER_STEP = 20;
+
+const LOTO_ITEMS = [
+  "Power / gas isolated at the disconnect",
+  "Personal lock and tag applied to the disconnect",
+  "Stored energy released and zero-energy verified",
+  "PPE on: gloves, eye protection, arc-rated sleeves",
+];
+
 
 function DifficultyGauge({ level }: { level: number }) {
   const labels = ["", "Super Easy", "Easy", "Moderate", "Tricky", "Pro Level"];
@@ -94,9 +115,112 @@ function FixView() {
     }
   };
 
+  const [query, setQuery] = useState("");
+  const [scanFile, setScanFile] = useState<string | null>(null);
+  const [loto, setLoto] = useState<boolean[]>(() => LOTO_ITEMS.map(() => false));
+  const lotoDone = loto.every(Boolean);
+
   return (
     <div className="space-y-6">
       <section>
+        <p className="flex items-center gap-2 text-base font-black uppercase tracking-wider text-primary">
+          <HardHat className="h-5 w-5" strokeWidth={2.5} /> Field Tech HUD
+        </p>
+        <label htmlFor="manual-search" className="sr-only">
+          Search commercial model manuals
+        </label>
+        <div className="mt-3 flex items-center gap-3 rounded-2xl border-2 border-border bg-card px-4 py-3 focus-within:border-primary">
+          <Search className="h-6 w-6 shrink-0 text-primary" strokeWidth={2.5} />
+          <input
+            id="manual-search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search Commercial Model Manuals (Carrier, Trane, Moen Pro)"
+            className="w-full bg-transparent text-base font-bold placeholder:font-semibold placeholder:text-muted-foreground focus:outline-none"
+          />
+        </div>
+      </section>
+
+      <section className="rounded-3xl border-2 border-border bg-card p-5 shadow-sm">
+        <h2 className="flex items-center gap-2 text-xl font-black">
+          <Camera className="h-6 w-6 text-primary" strokeWidth={2.5} />
+          Active Equipment Scan
+        </h2>
+        <p className="mt-1 text-base text-muted-foreground">
+          Photograph a commercial boiler nameplate or HVAC error code — PocketPro AI parses the
+          manufacturer manual PDF automatically.
+        </p>
+        <label className="mt-4 flex h-32 cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-primary/60 bg-primary/5 text-primary transition-colors hover:bg-primary/10">
+          <Camera className="h-10 w-10" strokeWidth={2.5} />
+          <span className="text-base font-black uppercase tracking-wide">Capture Equipment</span>
+          <input
+            type="file"
+            accept="image/*"
+            capture="environment"
+            className="hidden"
+            onChange={(e) => setScanFile(e.target.files?.[0]?.name ?? null)}
+          />
+        </label>
+        {scanFile && (
+          <p className="mt-3 flex items-center gap-2 rounded-xl bg-success/15 px-4 py-3 text-base font-bold text-success">
+            <FileText className="h-5 w-5" strokeWidth={2.5} />
+            Manual parsed from {scanFile}
+          </p>
+        )}
+      </section>
+
+      <section
+        className={`rounded-3xl border-2 p-5 shadow-sm ${
+          lotoDone ? "border-success bg-success/10" : "border-warning bg-warning/10"
+        }`}
+      >
+        <h2 className="flex items-center gap-2 text-xl font-black">
+          <Lock className="h-6 w-6" strokeWidth={2.5} />
+          Lockout/Tagout Safety Checklist
+        </h2>
+        <p className="mt-1 text-base font-bold">
+          {lotoDone
+            ? "Verified — technical instructions unlocked."
+            : "Required before technical instructions are shown."}
+        </p>
+        <ul className="mt-4 space-y-2">
+          {LOTO_ITEMS.map((item, i) => (
+            <li key={item}>
+              <button
+                onClick={() =>
+                  setLoto((prev) => prev.map((v, idx) => (idx === i ? !v : v)))
+                }
+                aria-pressed={loto[i]}
+                className={`flex w-full items-center gap-3 rounded-2xl border-2 p-3 text-left transition-colors ${
+                  loto[i] ? "border-success bg-success/15" : "border-border bg-background"
+                }`}
+              >
+                <span
+                  className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border-2 ${
+                    loto[i]
+                      ? "border-success bg-success text-success-foreground"
+                      : "border-border"
+                  }`}
+                >
+                  {loto[i] && <Check className="h-5 w-5" strokeWidth={3} />}
+                </span>
+                <span className="text-base font-bold leading-tight">{item}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      {!lotoDone && (
+        <p className="rounded-3xl border-2 border-dashed border-border bg-card p-6 text-center text-lg font-black text-muted-foreground">
+          🔒 Technical instructions locked until lockout/tagout is confirmed.
+        </p>
+      )}
+
+      {lotoDone && (
+        <div className="space-y-6 animate-fade-in">
+      <section>
+
         <p className="text-base font-bold uppercase tracking-wider text-primary">Your Fix</p>
         <h1 className="mt-1 text-3xl font-black">{aiFix.title}</h1>
         <p className="mt-2 text-lg text-muted-foreground">
@@ -231,6 +355,9 @@ function FixView() {
         </span>
         <ArrowRight className="h-5 w-5" strokeWidth={2.5} />
       </Link>
+        </div>
+      )}
     </div>
+
   );
 }

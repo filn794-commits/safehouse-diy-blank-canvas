@@ -5,7 +5,7 @@ import { useProgress, type BadgeId } from "@/lib/progress-store";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Your Progress — SafeHouse DIY" },
+      { title: "Your Progress — PocketPro AI" },
       { name: "description", content: "Track your repair skills, XP, and badges as you grow." },
     ],
   }),
@@ -31,8 +31,8 @@ function Dashboard() {
   return (
     <div className="space-y-6">
       <section className="rounded-3xl border-2 border-border bg-card p-6 shadow-sm">
-        <p className="text-base font-bold uppercase tracking-wider text-muted-foreground">Welcome back</p>
-        <h1 className="mt-1 text-3xl font-black">Maria</h1>
+        <p className="text-base font-bold uppercase tracking-wider text-muted-foreground">Welcome back, Maria</p>
+        <h1 className="mt-1 text-3xl font-black">What are we tackling today?</h1>
 
         <div className="mt-5 flex items-center gap-4 rounded-2xl bg-primary p-5 text-primary-foreground">
           <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-primary-foreground/15 text-3xl font-black">

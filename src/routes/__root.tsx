@@ -51,10 +51,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "SafeHouse DIY — Home Repair Made Simple" },
+      { title: "PocketPro AI — Home Repair Made Simple" },
       { name: "description", content: "Confident home repairs for beginners. Step-by-step fixes, scam protection, and friendly guidance." },
-      { property: "og:title", content: "SafeHouse DIY — Home Repair Made Simple" },
-      { name: "twitter:title", content: "SafeHouse DIY — Home Repair Made Simple" },
+      { property: "og:title", content: "PocketPro AI — Home Repair Made Simple" },
+      { name: "twitter:title", content: "PocketPro AI — Home Repair Made Simple" },
       { property: "og:description", content: "Confident home repairs for beginners. Step-by-step fixes, scam protection, and friendly guidance." },
       { name: "twitter:description", content: "Confident home repairs for beginners. Step-by-step fixes, scam protection, and friendly guidance." },
       { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/2ccfe461-fee2-44fa-b6a5-98a44b26820b" },
@@ -135,7 +135,7 @@ function AppHeader() {
         </div>
         <div>
           <p className="font-display text-lg font-bold leading-none tracking-tight">
-            SafeHouse<span className="text-primary">.diy</span>
+            PocketPro<span className="text-primary"> AI</span>
           </p>
           <p className="mt-1 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
             // you've got this
