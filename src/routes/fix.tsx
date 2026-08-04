@@ -1,6 +1,17 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Check, Wrench, ShieldAlert, Trophy, ArrowRight } from "lucide-react";
+import {
+  Check,
+  Wrench,
+  ShieldAlert,
+  Trophy,
+  ArrowRight,
+  Search,
+  Camera,
+  FileText,
+  Lock,
+  HardHat,
+} from "lucide-react";
 import { toast } from "sonner";
 import { useProgress, progressStore } from "@/lib/progress-store";
 import { useFix, fixStore } from "@/lib/fix-store";
@@ -8,14 +19,24 @@ import { useFix, fixStore } from "@/lib/fix-store";
 export const Route = createFileRoute("/fix")({
   head: () => ({
     meta: [
-      { title: "Your Fix Guide — PocketPro AI" },
-      { name: "description", content: "A simple step-by-step guide tailored to your repair." },
+      { title: "Field Tech HUD — PocketPro AI" },
+      { name: "description", content: "Commercial manual lookup, equipment scanning, and lockout/tagout-gated repair steps for maintenance pros." },
+      { property: "og:title", content: "Field Tech HUD — PocketPro AI" },
+      { property: "og:description", content: "Commercial manual lookup, equipment scanning, and lockout/tagout-gated repair steps for maintenance pros." },
     ],
   }),
   component: FixView,
 });
 
 const XP_PER_STEP = 20;
+
+const LOTO_ITEMS = [
+  "Power / gas isolated at the disconnect",
+  "Personal lock and tag applied to the disconnect",
+  "Stored energy released and zero-energy verified",
+  "PPE on: gloves, eye protection, arc-rated sleeves",
+];
+
 
 function DifficultyGauge({ level }: { level: number }) {
   const labels = ["", "Super Easy", "Easy", "Moderate", "Tricky", "Pro Level"];
