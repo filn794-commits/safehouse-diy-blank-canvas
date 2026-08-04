@@ -1,0 +1,122 @@
+{
+  "version": 1,
+  "sdk_version": "0.26.1",
+  "path": "/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://ilexcrgxokjwbkaxkjkn.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "pocketpro-ai",
+      "version": "0.1.0",
+      "title": "PocketPro AI"
+    },
+    "tools": [
+      {
+        "name": "list_common_issues",
+        "title": "List common repair issues",
+        "description": "List the home repair jobs PocketPro AI covers, with their fair price ranges and scam danger thresholds.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "check_quote",
+        "title": "Check a contractor quote",
+        "description": "Judge whether a contractor quote is a fair deal, worth a second opinion, or a likely scam, using Phoenix-area labor rates.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "issue_id": {
+              "type": "string",
+              "enum": [
+                "clogged-drain",
+                "water-heater",
+                "ac-warm"
+              ],
+              "description": "Repair job id from list_common_issues."
+            },
+            "quote_amount": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "description": "The contractor's quoted price in US dollars."
+            }
+          },
+          "required": [
+            "issue_id",
+            "quote_amount"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_contractor_script",
+        "title": "Get a contractor phone script",
+        "description": "Get the word-for-word script to read to a contractor or dispatcher for a given repair job, plus anti-upsell tips.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "issue_id": {
+              "type": "string",
+              "enum": [
+                "clogged-drain",
+                "water-heater",
+                "ac-warm"
+              ],
+              "description": "Repair job id from list_common_issues."
+            }
+          },
+          "required": [
+            "issue_id"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_repair_guide",
+        "title": "Get a step-by-step repair guide",
+        "description": "Get a beginner-friendly DIY repair guide with difficulty level, tool list, and numbered steps. Omit guide_id to list every available guide.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "guide_id": {
+              "description": "Guide id, e.g. 'clogged-kitchen-drain'. Omit to list all guides.",
+              "type": "string"
+            }
+          }
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
