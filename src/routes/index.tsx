@@ -5,7 +5,7 @@ import { useProgress, type BadgeId } from "@/lib/progress-store";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Your Progress — SafeHouse DIY" },
+      { title: "Your Progress — PocketPro AI" },
       { name: "description", content: "Track your repair skills, XP, and badges as you grow." },
     ],
   }),

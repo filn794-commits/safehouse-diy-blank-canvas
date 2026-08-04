@@ -13,7 +13,7 @@ import {
 export const Route = createFileRoute("/scam-guard")({
   head: () => ({
     meta: [
-      { title: "Scam Guard — SafeHouse DIY" },
+      { title: "Scam Guard — PocketPro AI" },
       { name: "description", content: "Fair price estimates and what to say to your contractor." },
     ],
   }),

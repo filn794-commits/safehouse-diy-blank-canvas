@@ -8,7 +8,7 @@ import { useFix, fixStore } from "@/lib/fix-store";
 export const Route = createFileRoute("/fix")({
   head: () => ({
     meta: [
-      { title: "Your Fix Guide — SafeHouse DIY" },
+      { title: "Your Fix Guide — PocketPro AI" },
       { name: "description", content: "A simple step-by-step guide tailored to your repair." },
     ],
   }),

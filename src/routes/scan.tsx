@@ -6,7 +6,7 @@ import { CLOGGED_DRAIN_FIX, fixStore } from "@/lib/fix-store";
 export const Route = createFileRoute("/scan")({
   head: () => ({
     meta: [
-      { title: "Scan Hub — SafeHouse DIY" },
+      { title: "Scan Hub — PocketPro AI" },
       { name: "description", content: "Describe or photograph your home problem to get a step-by-step fix." },
     ],
   }),
@@ -116,7 +116,7 @@ function ScanHub() {
           <>
             <Loader2 className="h-6 w-6 animate-spin" strokeWidth={2.5} />
             <span className="text-left leading-tight">
-              SafeHouse AI is analyzing your issue...
+              PocketPro AI is analyzing your issue...
               <span className="block text-base font-bold opacity-90">
                 Checking local repair metrics...
               </span>
