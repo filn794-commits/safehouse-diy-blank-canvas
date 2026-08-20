@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { Camera, MessageSquare, Send, Loader2, Wrench, ReceiptText } from "lucide-react";
-import { CLOGGED_DRAIN_FIX, fixStore } from "@/lib/fix-store";
+import { matchFix, fixStore } from "@/lib/fix-store";
 
 export const Route = createFileRoute("/scan")({
   head: () => ({
@@ -23,16 +23,31 @@ function ScanHub() {
   const [text, setText] = useState("");
   const [fileName, setFileName] = useState<string | null>(null);
   const [analyzing, setAnalyzing] = useState(false);
+  const [quoteAmount, setQuoteAmount] = useState("");
+
+  const guessIssue = (t: string) => {
+    const s = t.toLowerCase();
+    if (/(ac|a\/c|air condition|hvac|cool)/.test(s)) return "ac-warm" as const;
+    if (/(water heater|heater|hot water)/.test(s)) return "water-heater" as const;
+    return "clogged-drain" as const;
+  };
 
   const run = () => {
     if (analyzing) return;
     setAnalyzing(true);
     setTimeout(() => {
       if (mode === "quote") {
-        navigate({ to: "/scam-guard" });
+        const amount = Number(quoteAmount);
+        navigate({
+          to: "/scam-guard",
+          search: {
+            ...(Number.isFinite(amount) && amount > 0 ? { quote: Math.round(amount) } : {}),
+            issue: guessIssue(text),
+          },
+        });
         return;
       }
-      fixStore.setFix(CLOGGED_DRAIN_FIX, true);
+      fixStore.setFix(matchFix(text), true);
       navigate({ to: "/fix" });
     }, 3000);
   };
@@ -123,6 +138,28 @@ function ScanHub() {
         </p>
       )}
 
+      {mode === "quote" && (
+        <section className="rounded-3xl border-2 border-primary bg-card p-5 shadow-sm">
+          <label htmlFor="quote-amount" className="text-lg font-black">
+            What did they quote you? ($)
+          </label>
+          <input
+            id="quote-amount"
+            type="number"
+            inputMode="decimal"
+            min={0}
+            value={quoteAmount}
+            onChange={(e) => setQuoteAmount(e.target.value)}
+            placeholder="e.g. 450"
+            disabled={analyzing}
+            className="mt-3 w-full rounded-2xl border-2 border-input bg-background px-4 py-4 text-2xl font-black focus:border-primary focus:outline-none disabled:opacity-60"
+          />
+          <p className="mt-2 text-base text-muted-foreground">
+            We'll run it against local fair-price ranges on the risk dial.
+          </p>
+        </section>
+      )}
+
       <section className="rounded-3xl border-2 border-border bg-card p-5 shadow-sm">
         <label htmlFor="describe" className="flex items-center gap-2 text-lg font-black">
           <MessageSquare className="h-6 w-6 text-primary" strokeWidth={2.5} />
@@ -139,7 +176,10 @@ function ScanHub() {
         />
         <button
           onClick={run}
-          disabled={analyzing || text.trim().length === 0}
+          disabled={
+            analyzing ||
+            (mode === "diy" ? text.trim().length === 0 : quoteAmount.trim().length === 0)
+          }
           className="mt-4 flex w-full items-center justify-center gap-3 rounded-2xl bg-secondary px-6 py-4 text-lg font-black text-secondary-foreground transition-transform active:scale-[0.98] disabled:opacity-50"
         >
           <Send className="h-5 w-5" strokeWidth={2.5} />

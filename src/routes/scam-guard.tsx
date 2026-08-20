@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ShieldCheck,
   Copy,
@@ -11,7 +11,21 @@ import {
   Gauge,
 } from "lucide-react";
 
+type ScamGuardSearch = { quote?: number; issue?: IssueId };
+
 export const Route = createFileRoute("/scam-guard")({
+  validateSearch: (search: Record<string, unknown>): ScamGuardSearch => {
+    const q = Number(search["quote"]);
+    const issue = search["issue"];
+    const validIssue =
+      issue === "clogged-drain" || issue === "water-heater" || issue === "ac-warm"
+        ? (issue as IssueId)
+        : undefined;
+    return {
+      ...(Number.isFinite(q) && q > 0 ? { quote: Math.round(q) } : {}),
+      ...(validIssue ? { issue: validIssue } : {}),
+    };
+  },
   head: () => ({
     meta: [
       { title: "Liar Detector — PocketPro AI" },
@@ -110,11 +124,18 @@ function RiskDial({ quote, issue }: { quote: number; issue: Issue }) {
 }
 
 function ScamGuard() {
-  const [issueId, setIssueId] = useState<IssueId>("clogged-drain");
-  const [quote, setQuote] = useState(275);
+  const search = Route.useSearch();
+  const [issueId, setIssueId] = useState<IssueId>(search.issue ?? "clogged-drain");
+  const [quote, setQuote] = useState(search.quote ?? 275);
   const [copied, setCopied] = useState(false);
   const issue = ISSUES[issueId];
   const risk = useMemo(() => riskOf(quote, issue), [quote, issue]);
+
+  // Keep in sync if the user arrives from Scan Hub with a new quote.
+  useEffect(() => {
+    if (search.issue) setIssueId(search.issue);
+    if (search.quote) setQuote(search.quote);
+  }, [search.issue, search.quote]);
 
   const copy = async () => {
     try {
@@ -139,6 +160,12 @@ function ScamGuard() {
       </section>
 
       {/* Issue picker */}
+      {search.quote ? (
+        <p className="rounded-2xl border-2 border-primary bg-primary/10 p-4 text-lg font-black">
+          Scanned quote loaded: <span className="text-primary">${search.quote}</span> — check the dial below.
+        </p>
+      ) : null}
+
       <section className="rounded-3xl border-2 border-border bg-card p-5 shadow-sm">
         <label htmlFor="issue" className="text-lg font-black">
           What is the job?
@@ -162,6 +189,14 @@ function ScamGuard() {
         <label htmlFor="quote" className="mt-5 block text-lg font-black">
           Their quote: <span className="text-primary">${quote}</span>
         </label>
+        <input
+          type="number"
+          aria-label="Enter the exact quote amount in dollars"
+          min={0}
+          value={quote}
+          onChange={(e) => setQuote(Math.max(0, Number(e.target.value) || 0))}
+          className="mt-3 w-full rounded-2xl border-2 border-input bg-background px-4 py-3 text-lg font-black focus:border-primary focus:outline-none"
+        />
         <input
           id="quote"
           type="range"

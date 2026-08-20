@@ -8,7 +8,7 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { Home, ScanLine, Wrench, ShieldCheck, LogOut } from "lucide-react";
+import { Home, ScanLine, Wrench, ShieldCheck, LogOut, Video } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import appCss from "../styles.css?url";
@@ -95,6 +95,7 @@ const navItems = [
   { to: "/scan", label: "Scan", icon: ScanLine },
   { to: "/fix", label: "Fix", icon: Wrench },
   { to: "/scam-guard", label: "Guard", icon: ShieldCheck },
+  { to: "/mentor", label: "Mentor", icon: Video },
 ] as const;
 
 function BottomNav() {
@@ -190,6 +191,36 @@ function AppHeader() {
   );
 }
 
+function AppFooter() {
+  return (
+    <footer className="mx-auto mt-10 max-w-2xl px-5 pb-8">
+      <div className="rounded-3xl border border-border bg-card/60 p-5 backdrop-blur">
+        <p className="font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-primary">
+          // safety &amp; pricing disclaimer
+        </p>
+        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+          PocketPro AI provides general guidance and <strong>estimated</strong> price ranges based on
+          typical regional labor rates. Estimates are not quotes and actual costs vary by property,
+          parts, and contractor. Nothing here is professional, legal, or licensed-trade advice. Always
+          shut off power, gas, and water before working, follow local codes, and hire a licensed
+          professional for gas, electrical, structural, or anything you are unsure about. You are
+          responsible for your own safety.
+        </p>
+        <nav aria-label="Footer" className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm font-bold">
+          <Link to="/" className="text-muted-foreground transition-colors hover:text-foreground">Home</Link>
+          <Link to="/scan" className="text-muted-foreground transition-colors hover:text-foreground">Scan</Link>
+          <Link to="/fix" className="text-muted-foreground transition-colors hover:text-foreground">Fix</Link>
+          <Link to="/scam-guard" className="text-muted-foreground transition-colors hover:text-foreground">Scam Guard</Link>
+          <Link to="/mentor" className="text-muted-foreground transition-colors hover:text-foreground">Mentors</Link>
+        </nav>
+        <p className="mt-4 font-mono text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
+          © {new Date().getFullYear()} PocketPro AI — Built for beginners, moms, seniors &amp; crews
+        </p>
+      </div>
+    </footer>
+  );
+}
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   return (
@@ -200,6 +231,7 @@ function RootComponent() {
         <main className="mx-auto max-w-2xl px-5 py-6">
           <Outlet />
         </main>
+        <AppFooter />
         <BottomNav />
         <LevelUpOverlay />
         <Toaster position="top-center" richColors closeButton theme="dark" />
