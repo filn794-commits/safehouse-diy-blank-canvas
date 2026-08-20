@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Award, Hammer, Droplet, Zap, Paintbrush, Lock, Sparkles, Wrench } from "lucide-react";
 import { useProgress, type BadgeId } from "@/lib/progress-store";
+import { useUser } from "@/hooks/use-user";
+import { Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -25,14 +27,34 @@ const badges: Badge[] = [
 ];
 
 function Dashboard() {
-  const { xp, goal, unlocked, level, rankName } = useProgress();
+  const { xp, goal, unlocked, level, rankName, lastGain } = useProgress();
+  const user = useUser();
   const pct = Math.min(100, (xp / goal) * 100);
 
   return (
     <div className="space-y-6">
       <section className="rounded-3xl border-2 border-border bg-card p-6 shadow-sm">
-        <p className="text-base font-bold uppercase tracking-wider text-muted-foreground">Welcome back, Maria</p>
-        <h1 className="mt-1 text-3xl font-black">What are we tackling today?</h1>
+        <div className="flex items-center gap-4">
+          <div
+            aria-hidden="true"
+            className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border-2 border-primary bg-primary/15 font-display text-xl font-black text-primary"
+          >
+            {user.initials}
+          </div>
+          <div className="min-w-0">
+            <p className="text-base font-bold uppercase tracking-wider text-muted-foreground">
+              Welcome back, {user.displayName}
+            </p>
+            {user.email ? (
+              <p className="truncate font-mono text-xs text-muted-foreground">{user.email}</p>
+            ) : (
+              <Link to="/auth" search={{ next: "/" }} className="font-mono text-xs text-primary underline">
+                Sign in to save your progress
+              </Link>
+            )}
+          </div>
+        </div>
+        <h1 className="mt-4 text-3xl font-black">What are we tackling today?</h1>
 
         <div className="mt-5 flex items-center gap-4 rounded-2xl bg-primary p-5 text-primary-foreground">
           <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-primary-foreground/15 text-3xl font-black">
@@ -48,8 +70,16 @@ function Dashboard() {
       <section className="rounded-3xl border-2 border-border bg-card p-6 shadow-sm">
         <div className="flex items-end justify-between">
           <h2 className="text-2xl font-black">Your XP</h2>
-          <p className="font-display text-2xl font-black text-primary">
+          <p className="relative font-display text-2xl font-black text-primary">
             {xp}<span className="text-muted-foreground">/{goal}</span>
+            {lastGain && (
+              <span
+                key={lastGain.id}
+                className="pointer-events-none absolute -top-6 right-0 rounded-full bg-success px-2 py-0.5 text-sm font-black text-success-foreground animate-xp-pop"
+              >
+                +{lastGain.amount} XP
+              </span>
+            )}
           </p>
         </div>
         <div className="mt-4 h-6 w-full overflow-hidden rounded-full border-2 border-border bg-muted">
