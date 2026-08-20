@@ -1,8 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Award, Hammer, Droplet, Zap, Paintbrush, Lock, Sparkles, Wrench } from "lucide-react";
 import { useProgress, type BadgeId } from "@/lib/progress-store";
 import { useUser } from "@/hooks/use-user";
-import { Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({
   head: () => ({
