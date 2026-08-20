@@ -202,7 +202,7 @@ function FixView() {
                       : "border-border"
                   }`}
                 >
-                  {loto[i] && <Check className="h-5 w-5" strokeWidth={3} />}
+                  {loto[i] && <Check className="h-5 w-5 animate-check-draw" strokeWidth={3} />}
                 </span>
                 <span className="text-base font-bold leading-tight">{item}</span>
               </button>
@@ -307,7 +307,7 @@ function FixView() {
                     {isChecked ? (
                       <Check
                         key={`check-${i}-${awarded[i] ? "done" : "fresh"}`}
-                        className="h-6 w-6 animate-scale-in"
+                        className="h-6 w-6 animate-check-draw"
                         strokeWidth={3}
                       />
                     ) : (
