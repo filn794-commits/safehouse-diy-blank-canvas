@@ -122,7 +122,8 @@ type State = { fix: FixData; justAnalyzed: boolean };
 
 const STORAGE_KEY = "pocketpro.fix.v1";
 
-let state: State = { fix: DEFAULT_FIX, justAnalyzed: false };
+const SERVER_STATE: State = { fix: DEFAULT_FIX, justAnalyzed: false };
+let state: State = SERVER_STATE;
 const listeners = new Set<() => void>();
 
 function emit() {
@@ -165,7 +166,7 @@ export const fixStore = {
     return state;
   },
   getServerSnapshot() {
-    return { fix: DEFAULT_FIX, justAnalyzed: false };
+    return SERVER_STATE;
   },
   setFix(fix: FixData, justAnalyzed = true) {
     state = { fix, justAnalyzed };
