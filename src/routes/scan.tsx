@@ -1,7 +1,8 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Camera, MessageSquare, Send, Loader2, Wrench, ReceiptText } from "lucide-react";
 import { matchFix, fixStore } from "@/lib/fix-store";
+import { CameraCapture } from "@/components/CameraCapture";
 
 export const Route = createFileRoute("/scan")({
   head: () => ({
@@ -24,6 +25,8 @@ function ScanHub() {
   const [fileName, setFileName] = useState<string | null>(null);
   const [analyzing, setAnalyzing] = useState(false);
   const [quoteAmount, setQuoteAmount] = useState("");
+  const [cameraOpen, setCameraOpen] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const guessIssue = (t: string) => {
     const s = t.toLowerCase();
@@ -62,8 +65,11 @@ function ScanHub() {
       </div>
 
       {/* Massive camera action button */}
-      <label
-        className={`mx-auto flex aspect-square w-full max-w-sm cursor-pointer flex-col items-center justify-center gap-4 rounded-[2.5rem] border-4 border-primary bg-primary text-primary-foreground shadow-[0_0_60px_color-mix(in_oklab,var(--primary)_45%,transparent)] transition-transform active:scale-[0.97] ${
+      <button
+        type="button"
+        onClick={() => setCameraOpen(true)}
+        disabled={analyzing}
+        className={`mx-auto flex aspect-square w-full max-w-sm cursor-pointer flex-col items-center justify-center gap-4 rounded-[2.5rem] border-4 border-primary bg-primary text-primary-foreground shadow-[0_0_60px_color-mix(in_oklab,var(--primary)_45%,transparent)] transition-transform active:scale-[0.97] disabled:pointer-events-none disabled:opacity-70 ${
           analyzing ? "pointer-events-none opacity-70" : ""
         }`}
       >
@@ -86,18 +92,33 @@ function ScanHub() {
             </span>
           </>
         )}
-        <input
-          type="file"
-          accept="image/*,video/*"
-          capture="environment"
-          className="hidden"
-          disabled={analyzing}
-          onChange={(e) => {
-            setFileName(e.target.files?.[0]?.name ?? null);
+      </button>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*,video/*"
+        className="hidden"
+        disabled={analyzing}
+        onChange={(e) => {
+          setFileName(e.target.files?.[0]?.name ?? null);
+          run();
+        }}
+      />
+
+      {cameraOpen && (
+        <CameraCapture
+          onClose={() => setCameraOpen(false)}
+          onPickFile={() => {
+            setCameraOpen(false);
+            fileInputRef.current?.click();
+          }}
+          onCapture={(_dataUrl, label) => {
+            setCameraOpen(false);
+            setFileName(label);
             run();
           }}
         />
-      </label>
+      )}
 
       {/* Segment toggle */}
       <div
