@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useRef, useState } from "react";
 import { Camera, MessageSquare, Send, Loader2, Wrench, ReceiptText } from "lucide-react";
+import { toast } from "sonner";
 import { matchFix, fixStore } from "@/lib/fix-store";
 import { CameraCapture } from "@/components/CameraCapture";
 
