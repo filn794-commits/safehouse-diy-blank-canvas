@@ -71,6 +71,32 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" },
     ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "WebSite",
+              "@id": "https://safehouse-diy-blank-canvas.lovable.app/#website",
+              "name": "PocketPro AI",
+              "url": "https://safehouse-diy-blank-canvas.lovable.app/",
+              "description": "Confident home repairs for beginners. Step-by-step fixes, scam protection, and friendly guidance.",
+              "publisher": { "@id": "https://safehouse-diy-blank-canvas.lovable.app/#organization" },
+            },
+            {
+              "@type": "Organization",
+              "@id": "https://safehouse-diy-blank-canvas.lovable.app/#organization",
+              "name": "PocketPro AI",
+              "alternateName": "SafeHouse DIY",
+              "url": "https://safehouse-diy-blank-canvas.lovable.app/",
+              "description": "Home repair guidance and expert consultation for beginners, single mothers, and elderly homeowners.",
+            },
+          ],
+        }),
+      },
+    ],
   }),
   shellComponent: RootShell,
   component: RootComponent,
