@@ -36,10 +36,29 @@ function ScanHub() {
     return "clogged-drain" as const;
   };
 
-  const run = () => {
+  const run = async () => {
     if (analyzing) return;
     setAnalyzing(true);
-    setTimeout(() => {
+
+    const analyze = new Promise<void>((resolve, reject) => {
+      setTimeout(() => {
+        // Simulate a rare network/AI failure so the error toast is reachable
+        if (Math.random() < 0.12) {
+          reject(new Error("We couldn't reach the AI engine. Please try again."));
+        } else {
+          resolve();
+        }
+      }, 3000);
+    });
+
+    toast.promise(analyze, {
+      loading: "PocketPro AI is analyzing your request...",
+      success: "Analysis complete! Redirecting...",
+      error: (err) => (err instanceof Error ? err.message : "Analysis failed."),
+    });
+
+    try {
+      await analyze;
       if (mode === "quote") {
         const amount = Number(quoteAmount);
         navigate({
@@ -53,7 +72,9 @@ function ScanHub() {
       }
       fixStore.setFix(matchFix(text), true);
       navigate({ to: "/fix" });
-    }, 3000);
+    } catch {
+      setAnalyzing(false);
+    }
   };
 
   return (
