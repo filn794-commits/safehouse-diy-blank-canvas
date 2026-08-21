@@ -65,8 +65,11 @@ function ScanHub() {
       </div>
 
       {/* Massive camera action button */}
-      <label
-        className={`mx-auto flex aspect-square w-full max-w-sm cursor-pointer flex-col items-center justify-center gap-4 rounded-[2.5rem] border-4 border-primary bg-primary text-primary-foreground shadow-[0_0_60px_color-mix(in_oklab,var(--primary)_45%,transparent)] transition-transform active:scale-[0.97] ${
+      <button
+        type="button"
+        onClick={() => setCameraOpen(true)}
+        disabled={analyzing}
+        className={`mx-auto flex aspect-square w-full max-w-sm cursor-pointer flex-col items-center justify-center gap-4 rounded-[2.5rem] border-4 border-primary bg-primary text-primary-foreground shadow-[0_0_60px_color-mix(in_oklab,var(--primary)_45%,transparent)] transition-transform active:scale-[0.97] disabled:pointer-events-none disabled:opacity-70 ${
           analyzing ? "pointer-events-none opacity-70" : ""
         }`}
       >
@@ -89,18 +92,33 @@ function ScanHub() {
             </span>
           </>
         )}
-        <input
-          type="file"
-          accept="image/*,video/*"
-          capture="environment"
-          className="hidden"
-          disabled={analyzing}
-          onChange={(e) => {
-            setFileName(e.target.files?.[0]?.name ?? null);
+      </button>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*,video/*"
+        className="hidden"
+        disabled={analyzing}
+        onChange={(e) => {
+          setFileName(e.target.files?.[0]?.name ?? null);
+          run();
+        }}
+      />
+
+      {cameraOpen && (
+        <CameraCapture
+          onClose={() => setCameraOpen(false)}
+          onPickFile={() => {
+            setCameraOpen(false);
+            fileInputRef.current?.click();
+          }}
+          onCapture={(_dataUrl, label) => {
+            setCameraOpen(false);
+            setFileName(label);
             run();
           }}
         />
-      </label>
+      )}
 
       {/* Segment toggle */}
       <div
