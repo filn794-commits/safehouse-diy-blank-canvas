@@ -1,7 +1,8 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Camera, MessageSquare, Send, Loader2, Wrench, ReceiptText } from "lucide-react";
 import { matchFix, fixStore } from "@/lib/fix-store";
+import { CameraCapture } from "@/components/CameraCapture";
 
 export const Route = createFileRoute("/scan")({
   head: () => ({
