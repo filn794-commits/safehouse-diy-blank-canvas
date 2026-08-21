@@ -23,6 +23,28 @@ export const Route = createFileRoute("/mentor")({
           "Live 1-on-1 video help from a certified maintenance mentor. Friendly, patient, and beginner-safe.",
       },
     ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Service",
+          "serviceType": "Home Repair Consultation",
+          "provider": {
+            "@type": "Organization",
+            "name": "PocketPro AI",
+            "url": "https://safehouse-diy-blank-canvas.lovable.app/",
+          },
+          "description": "Live 1-on-1 video help from a certified maintenance mentor for home repairs, DIY guidance, and contractor quote review.",
+          "offers": {
+            "@type": "Offer",
+            "price": "5.00",
+            "priceCurrency": "USD",
+            "description": "$5.00 flat fee per consultation",
+          },
+        }),
+      },
+    ],
   }),
   component: MentorView,
 });
