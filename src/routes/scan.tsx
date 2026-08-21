@@ -25,6 +25,8 @@ function ScanHub() {
   const [fileName, setFileName] = useState<string | null>(null);
   const [analyzing, setAnalyzing] = useState(false);
   const [quoteAmount, setQuoteAmount] = useState("");
+  const [cameraOpen, setCameraOpen] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const guessIssue = (t: string) => {
     const s = t.toLowerCase();
